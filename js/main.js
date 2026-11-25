@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobBtns = document.querySelectorAll('.mob-nav-btn');
   const sidebar = document.getElementById('desktop-sidebar');
 
-  // Base de datos de los 4 muebles con pasos, vistas 360, transcripciones y herrajes compatibles propios
   const MUEBLES_DB = {
     m1: {
       nombre: 'Escritorio Nordico',
@@ -417,25 +416,49 @@ document.addEventListener('DOMContentLoaded', () => {
   let imagenMuebleActual = MUEBLES_DB.m1.img;
   let pasoIndiceActual = 0;
 
-  // Estado del reproductor de audio del paso
   let audioTimer = null;
   let audioElapsed = 0;
   let audioDuration = 45;
   let isPlayingAudio = false;
   let speechRate = 1;
 
-  // Estado de transformacion de la imagen 3D
   let rot = 0;
   let zoomed = false;
 
-  // Estado de Entorno Virtual 360
   const viewCards = document.querySelectorAll('.view-option-card');
   let viewIdx = 0;
 
-  // Estado de Accesibilidad Visual
   let accFontSizeClass = 'font-normal';
   let accThemeMode = 'light';
   let accContrastMode = 'standard';
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function showView(viewId) {
+    if (!viewId) return;
+    const target = document.getElementById(viewId);
+    if (!target) return;
+
+    views.forEach(v => v.classList.remove('active'));
+    target.classList.add('active');
+
+    navItems.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === viewId);
+    });
+
+    mobBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === viewId);
+    });
+
+    if (sidebar && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   function applyAccessibilitySettings() {
     const masterOn = document.getElementById('chk-acc-master')?.checked ?? true;
@@ -486,24 +509,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeText = `${formatSeconds(audioElapsed)} / ${formatSeconds(audioDuration)}`;
     const pct = audioDuration > 0 ? Math.min(100, (audioElapsed / audioDuration) * 100) : 0;
 
-    const timeDisplay = document.getElementById('audio-time-display');
+    setText('audio-time-display', timeText);
     const progressFill = document.getElementById('audio-progress-fill');
-    if (timeDisplay) timeDisplay.textContent = timeText;
     if (progressFill) progressFill.style.width = `${pct}%`;
 
-    const agTimeDisplay = document.getElementById('audioguia-time-display');
+    setText('audioguia-time-display', timeText);
     const agProgressFill = document.getElementById('audioguia-progress-fill');
-    if (agTimeDisplay) agTimeDisplay.textContent = timeText;
     if (agProgressFill) agProgressFill.style.width = `${pct}%`;
 
     updateTranscriptHighlight();
   }
 
   function setPlayButtonsLabel(label) {
-    const btn1 = document.getElementById('btn-play-step');
-    const btn2 = document.getElementById('btn-speak-step');
-    if (btn1) btn1.textContent = label;
-    if (btn2) btn2.textContent = label;
+    setText('btn-play-step', label);
+    setText('btn-speak-step', label);
   }
 
   function resetAudioPlayer(durationSec) {
@@ -516,20 +535,24 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAudioUI();
   }
 
+  function speakCustomText(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'es-ES';
+    u.rate = speechRate;
+    window.speechSynthesis.speak(u);
+  }
+
   function renderAudioGuiaTranscript() {
     const mueble = MUEBLES_DB[muebleActualId];
     if (!mueble) return;
     const paso = mueble.pasos[pasoIndiceActual] || mueble.pasos[0];
     const total = mueble.pasos.length;
 
-    const heading = document.getElementById('audioguia-main-heading');
-    if (heading) heading.textContent = `Audio-guia - ${mueble.nombre}`;
-
-    const sub = document.getElementById('audioguia-subtitle');
-    if (sub) sub.textContent = `Escucha las instrucciones del Paso ${pasoIndiceActual + 1} de ${total} (${paso.titulo})`;
-
-    const tHeading = document.getElementById('audioguia-transcript-heading');
-    if (tHeading) tHeading.textContent = `Instrucciones: ${paso.titulo}`;
+    setText('audioguia-main-heading', `Audio-guia - ${mueble.nombre}`);
+    setText('audioguia-subtitle', `Escucha las instrucciones del Paso ${pasoIndiceActual + 1} de ${total} (${paso.titulo})`);
+    setText('audioguia-transcript-heading', `Instrucciones: ${paso.titulo}`);
 
     const listEl = document.getElementById('audio-steps-list');
     if (!listEl) return;
@@ -547,15 +570,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       listEl.appendChild(div);
     });
-  }
-
-  function speakCustomText(text) {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'es-ES';
-    u.rate = speechRate;
-    window.speechSynthesis.speak(u);
   }
 
   function startAudioPlayback(withVoice) {
@@ -595,18 +609,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const total = mueble.pasos.length;
     const paso = mueble.pasos[index];
 
-    document.getElementById('step-pill-label').textContent = `Paso ${index + 1} de ${total}`;
-    document.getElementById('step-title-label').textContent = paso.titulo;
-    document.getElementById('guia3d-step-desc').textContent = paso.desc;
+    setText('step-pill-label', `Paso ${index + 1} de ${total}`);
+    setText('step-title-label', paso.titulo);
+    setText('guia3d-step-desc', paso.desc);
 
-    // Actualizar vista previa de accesibilidad con el paso actual
-    const prevTag = document.getElementById('acc-preview-step-tag');
-    const prevText = document.getElementById('acc-preview-step-text');
-    if (prevTag) prevTag.textContent = `Paso ${index + 1} (${mueble.nombre})`;
-    if (prevText) prevText.textContent = (paso.transcripcion && paso.transcripcion[0]) ? paso.transcripcion[0] : paso.desc;
+    setText('acc-preview-step-tag', `Paso ${index + 1} (${mueble.nombre})`);
+    setText('acc-preview-step-text', (paso.transcripcion && paso.transcripcion[0]) ? paso.transcripcion[0] : paso.desc);
 
     const pct = Math.round(((index + 1) / total) * 100);
-    document.getElementById('step-progress-fill').style.width = `${pct}%`;
+    const stepFill = document.getElementById('step-progress-fill');
+    if (stepFill) stepFill.style.width = `${pct}%`;
 
     document.querySelectorAll('#guia3d-steps-buttons .v-thumb').forEach((btn, idx) => {
       btn.classList.toggle('active', idx === index);
@@ -640,13 +652,13 @@ document.addEventListener('DOMContentLoaded', () => {
     viewCards.forEach((c, i) => c.classList.toggle('active', i === viewIdx));
 
     const activeCard = viewCards[viewIdx];
-    const angleName = activeCard.dataset.angle;
-    const viewKey = activeCard.dataset.viewKey;
-    const baseInfo = activeCard.dataset.info;
+    const angleName = activeCard.dataset.angle || 'Frontal';
+    const viewKey = activeCard.dataset.viewKey || 'frontal';
+    const baseInfo = activeCard.dataset.info || 'Vista';
 
-    document.getElementById('badge-vista-actual').textContent = `Vista ${angleName.toLowerCase()}`;
-    document.getElementById('view-360-title').textContent = `ENTORNO VIRTUAL 360 - ${mueble.nombre.toUpperCase()} (${angleName.toUpperCase()})`;
-    document.getElementById('view-360-desc').textContent = `${baseInfo} de ${mueble.nombre} en ambiente simulado`;
+    setText('badge-vista-actual', `Vista ${angleName.toLowerCase()}`);
+    setText('view-360-title', `ENTORNO VIRTUAL 360 - ${mueble.nombre.toUpperCase()} (${angleName.toUpperCase()})`);
+    setText('view-360-desc', `${baseInfo} de ${mueble.nombre} en ambiente simulado`);
 
     const img360 = document.getElementById('img-360-main');
     const targetSrc = (mueble.vistas360 && mueble.vistas360[viewKey]) ? mueble.vistas360[viewKey] : imagenMuebleActual;
@@ -692,24 +704,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const banner = document.getElementById('herrajes-security-banner');
-    const secTitle = document.getElementById('herrajes-security-title');
-    const secDesc = document.getElementById('herrajes-security-desc');
-    if (banner && secTitle && secDesc) {
-      banner.classList.toggle('warn', grupo.seguridadNivel === 'warn');
-      secTitle.textContent = grupo.seguridadTitulo;
-      secDesc.textContent = grupo.seguridadTexto;
-    }
+    if (banner) banner.classList.toggle('warn', grupo.seguridadNivel === 'warn');
+    setText('herrajes-security-title', grupo.seguridadTitulo);
+    setText('herrajes-security-desc', grupo.seguridadTexto);
   }
 
   function renderHerrajesMueble() {
     const mueble = MUEBLES_DB[muebleActualId];
     if (!mueble || !mueble.herrajesCompatibles) return;
 
-    const heading = document.getElementById('herrajes-main-heading');
-    if (heading) heading.textContent = `Herrajes alternativos - ${mueble.nombre}`;
-
-    const sub = document.getElementById('herrajes-subtitle');
-    if (sub) sub.textContent = `Herrajes requeridos para ${mueble.nombre}: ${mueble.herrajes}`;
+    setText('herrajes-main-heading', `Herrajes alternativos - ${mueble.nombre}`);
+    setText('herrajes-subtitle', `Herrajes requeridos para ${mueble.nombre}: ${mueble.herrajes}`);
 
     const tabsRow = document.getElementById('herrajes-tabs-row');
     if (!tabsRow) return;
@@ -739,14 +744,14 @@ document.addEventListener('DOMContentLoaded', () => {
     muebleActualId = id;
     imagenMuebleActual = customImgSrc || m.img;
 
-    document.getElementById('ficha-title').textContent = m.nombre;
-    document.getElementById('ficha-subtitle').textContent = m.subtitulo;
-    document.getElementById('ficha-time').textContent = m.tiempo;
-    document.getElementById('ficha-diff').textContent = m.dificultad;
-    document.getElementById('ficha-hw').textContent = m.herrajes;
-    document.getElementById('ficha-alto').textContent = m.alto;
-    document.getElementById('ficha-ancho').textContent = m.ancho;
-    document.getElementById('ficha-fondo').textContent = m.fondo;
+    setText('ficha-title', m.nombre);
+    setText('ficha-subtitle', m.subtitulo);
+    setText('ficha-time', m.tiempo);
+    setText('ficha-diff', m.dificultad);
+    setText('ficha-hw', m.herrajes);
+    setText('ficha-alto', m.alto);
+    setText('ficha-ancho', m.ancho);
+    setText('ficha-fondo', m.fondo);
 
     const fichaImg = document.getElementById('ficha-img');
     if (fichaImg) {
@@ -754,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fichaImg.src = imagenMuebleActual;
     }
 
-    document.getElementById('guia3d-main-heading').textContent = `Guia 3D - Paso a paso (${m.nombre})`;
+    setText('guia3d-main-heading', `Guia 3D - Paso a paso (${m.nombre})`);
     const guiaImg = document.getElementById('guia3d-img');
     if (guiaImg) {
       guiaImg.style.display = 'block';
@@ -766,22 +771,166 @@ document.addEventListener('DOMContentLoaded', () => {
     renderBotonesPasosGuia();
     seleccionarPasoGuia(0);
 
-    const arHeading = document.getElementById('ar-main-heading');
-    if (arHeading) arHeading.textContent = `Realidad Aumentada - ${m.nombre}`;
-    const arHint = document.getElementById('ar-hint-text');
-    if (arHint) arHint.textContent = `Apunta al piso para colocar: ${m.nombre}`;
+    setText('ar-main-heading', `Realidad Aumentada - ${m.nombre}`);
+    setText('ar-hint-text', `Apunta al piso para colocar: ${m.nombre}`);
     const arImg = document.getElementById('ar-img');
     if (arImg) {
       arImg.style.display = 'block';
       arImg.src = imagenMuebleActual;
     }
 
-    const e360Heading = document.getElementById('entorno360-main-heading');
-    if (e360Heading) e360Heading.textContent = `Entorno Virtual 360 - ${m.nombre}`;
-    const e360Sub = document.getElementById('entorno360-subtitle');
-    if (e360Sub) e360Sub.textContent = `Visualiza como quedaria tu ${m.nombre} en un ambiente simulado`;
+    setText('entorno360-main-heading', `Entorno Virtual 360 - ${m.nombre}`);
+    setText('entorno360-subtitle', `Visualiza como quedaria tu ${m.nombre} en un ambiente simulado`);
     select360View(0);
 
     renderHerrajesMueble();
   }
+
+  /* ---------- Delegación de clics para navegación y tarjetas ---------- */
+  document.addEventListener('click', (e) => {
+    const mueblesCard = e.target.closest('.catalog-item-card[data-mueble]');
+    if (mueblesCard) {
+      const mId = mueblesCard.dataset.mueble;
+      const imgSrc = mueblesCard.querySelector('img')?.getAttribute('src');
+      cargarMueble(mId, imgSrc);
+    }
+
+    const trigger = e.target.closest('.nav-item, .nav-trigger, .mob-nav-btn');
+    if (trigger && trigger.dataset.view) {
+      e.preventDefault();
+      showView(trigger.dataset.view);
+    }
+  });
+
+  document.getElementById('btn-mobile-menu')?.addEventListener('click', () => {
+    sidebar?.classList.toggle('open');
+  });
+
+  /* ---------- Filtros del catálogo ---------- */
+  document.querySelectorAll('#view-catalogo .cat-pill[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#view-catalogo .cat-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('#view-catalogo .catalog-item-card').forEach(card => {
+        const match = filter === 'todos' || card.dataset.category === filter;
+        card.style.display = match ? '' : 'none';
+      });
+    });
+  });
+
+  /* ---------- Controles Guía 3D y Audio ---------- */
+  function aplicarTransform3D() {
+    const img = document.getElementById('guia3d-img');
+    if (img) img.style.transform = `rotate(${rot}deg) scale(${zoomed ? 1.35 : 1})`;
+  }
+
+  document.getElementById('btn-fit-view')?.addEventListener('click', () => {
+    rot = 0;
+    zoomed = false;
+    aplicarTransform3D();
+  });
+  document.getElementById('btn-prev-angle')?.addEventListener('click', () => {
+    rot = (rot - 45) % 360;
+    aplicarTransform3D();
+  });
+  document.getElementById('btn-next-angle')?.addEventListener('click', () => {
+    rot = (rot + 45) % 360;
+    aplicarTransform3D();
+  });
+  document.getElementById('btn-rotate-3d')?.addEventListener('click', () => {
+    rot = (rot + 90) % 360;
+    aplicarTransform3D();
+  });
+  document.getElementById('btn-toggle-wire')?.addEventListener('click', () => {
+    zoomed = !zoomed;
+    aplicarTransform3D();
+  });
+
+  document.getElementById('btn-play-step')?.addEventListener('click', () => {
+    isPlayingAudio ? pauseAudioPlayback() : startAudioPlayback(false);
+  });
+  document.getElementById('btn-speak-step')?.addEventListener('click', () => {
+    isPlayingAudio ? pauseAudioPlayback() : startAudioPlayback(true);
+  });
+  document.getElementById('btn-step-pause')?.addEventListener('click', pauseAudioPlayback);
+  document.getElementById('btn-step-prev')?.addEventListener('click', () => {
+    if (pasoIndiceActual > 0) seleccionarPasoGuia(pasoIndiceActual - 1);
+  });
+  document.getElementById('btn-step-next')?.addEventListener('click', () => {
+    const total = MUEBLES_DB[muebleActualId]?.pasos.length || 1;
+    if (pasoIndiceActual < total - 1) seleccionarPasoGuia(pasoIndiceActual + 1);
+  });
+
+  document.querySelectorAll('.speed-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.speed-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      speechRate = parseFloat(btn.dataset.rate) || 1;
+    });
+  });
+
+  /* ---------- Vistas 360 ---------- */
+  viewCards.forEach((card, i) => {
+    card.addEventListener('click', () => select360View(i));
+  });
+  document.getElementById('btn-cycle-360')?.addEventListener('click', () => {
+    select360View(viewIdx + 1);
+  });
+
+  /* ---------- Accesibilidad ---------- */
+  document.getElementById('chk-acc-master')?.addEventListener('change', applyAccessibilitySettings);
+  document.querySelectorAll('.acc-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.acc-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      accFontSizeClass = btn.dataset.size || 'font-normal';
+      applyAccessibilitySettings();
+    });
+  });
+  document.querySelectorAll('.acc-theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.acc-theme-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      accThemeMode = btn.dataset.theme || 'light';
+      applyAccessibilitySettings();
+    });
+  });
+  document.querySelectorAll('.acc-contrast-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.acc-contrast-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      accContrastMode = btn.dataset.contrast || 'standard';
+      applyAccessibilitySettings();
+    });
+  });
+
+  /* ---------- Soporte técnico ---------- */
+  document.getElementById('support-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('support-error-box');
+    const tipo = document.getElementById('sup-type')?.value.trim();
+    const nombre = document.getElementById('sup-name')?.value.trim();
+    const correo = document.getElementById('sup-email')?.value.trim();
+    const desc = document.getElementById('sup-desc')?.value.trim();
+
+    if (!tipo || !nombre || !correo || !desc) {
+      if (errBox) {
+        errBox.textContent = 'Completa todos los campos obligatorios antes de enviar.';
+        errBox.classList.remove('hidden');
+      }
+      return;
+    }
+
+    if (errBox) {
+      errBox.textContent = '';
+      errBox.classList.add('hidden');
+    }
+    e.target.reset();
+    alert('Solicitud enviada correctamente. Nuestro equipo te contactara pronto.');
+  });
+
+  // Inicialización por defecto
+  cargarMueble('m1');
+  applyAccessibilitySettings();
 });
