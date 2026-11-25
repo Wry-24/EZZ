@@ -15,12 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
       alto: '75 cm',
       ancho: '120 cm',
       fondo: '60 cm',
-      img: '../assets/images/imagen2.png',
+      img: 'assets/images/imagen2.png',
       audioSrc: '',
       vistas360: {
-        frontal: '../assets/images/imagen2.png',
-        lateral: '../assets/images/imagen2.png',
-        perspectiva: '../assets/images/imagen2.png'
+        frontal: 'assets/images/imagen2.png',
+        lateral: 'assets/images/imagen2.png',
+        perspectiva: 'assets/images/imagen2.png'
       },
       herrajesCompatibles: {
         pernos: {
@@ -129,12 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
       alto: '180 cm',
       ancho: '80 cm',
       fondo: '32 cm',
-      img: '../assets/images/imagen3.png',
+      img: 'assets/images/imagen3.png',
       audioSrc: '',
       vistas360: {
-        frontal: '../assets/images/imagen3.png',
-        lateral: '../assets/images/imagen3.png',
-        perspectiva: '../assets/images/imagen3.png'
+        frontal: 'assets/images/imagen3.png',
+        lateral: 'assets/images/imagen3.png',
+        perspectiva: 'assets/images/imagen3.png'
       },
       herrajesCompatibles: {
         tornillos: {
@@ -233,12 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
       alto: '42 cm',
       ancho: '100 cm',
       fondo: '55 cm',
-      img: '../assets/images/imagen4.png',
+      img: 'assets/images/imagen4.png',
       audioSrc: '',
       vistas360: {
-        frontal: '../assets/images/imagen4.png',
-        lateral: '../assets/images/imagen4.png',
-        perspectiva: '../assets/images/imagen4.png'
+        frontal: 'assets/images/imagen4.png',
+        lateral: 'assets/images/imagen4.png',
+        perspectiva: 'assets/images/imagen4.png'
       },
       herrajesCompatibles: {
         pernos: {
@@ -316,12 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
       alto: '85 cm',
       ancho: '95 cm',
       fondo: '45 cm',
-      img: '../assets/images/imagen5.png',
+      img: 'assets/images/imagen5.png',
       audioSrc: '',
       vistas360: {
-        frontal: '../assets/images/imagen5.png',
-        lateral: '../assets/images/imagen5.png',
-        perspectiva: '../assets/images/imagen5.png'
+        frontal: 'assets/images/imagen5.png',
+        lateral: 'assets/images/imagen5.png',
+        perspectiva: 'assets/images/imagen5.png'
       },
       herrajesCompatibles: {
         pernos: {
@@ -768,10 +768,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const arHeading = document.getElementById('ar-main-heading');
     if (arHeading) arHeading.textContent = `Realidad Aumentada - ${m.nombre}`;
-
     const arHint = document.getElementById('ar-hint-text');
     if (arHint) arHint.textContent = `Apunta al piso para colocar: ${m.nombre}`;
-
     const arImg = document.getElementById('ar-img');
     if (arImg) {
       arImg.style.display = 'block';
@@ -780,320 +778,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const e360Heading = document.getElementById('entorno360-main-heading');
     if (e360Heading) e360Heading.textContent = `Entorno Virtual 360 - ${m.nombre}`;
-
     const e360Sub = document.getElementById('entorno360-subtitle');
     if (e360Sub) e360Sub.textContent = `Visualiza como quedaria tu ${m.nombre} en un ambiente simulado`;
-
     select360View(0);
+
     renderHerrajesMueble();
   }
-
-  cargarMueble('m1');
-
-  function switchView(targetId) {
-    if (targetId !== 'view-guia3d' && targetId !== 'view-audioguia' && isPlayingAudio) {
-      pauseAudioPlayback();
-    }
-
-    views.forEach(v => v.classList.remove('active'));
-    const target = document.getElementById(targetId);
-    if (target) target.classList.add('active');
-
-    if (targetId === 'view-editar-perfil') {
-      document.getElementById('edit-prof-name').value = document.getElementById('profile-display-name').textContent;
-      document.getElementById('edit-prof-email').value = document.getElementById('profile-display-email').textContent;
-      document.getElementById('edit-profile-error').classList.add('hidden');
-    }
-
-    if (targetId === 'view-cambiar-avatar') {
-      const currentAvatar = document.getElementById('profile-main-avatar');
-      if (currentAvatar && currentAvatar.src) {
-        document.getElementById('avatar-preview-img').src = currentAvatar.src;
-      }
-    }
-
-    const navTarget = (targetId === 'view-editar-perfil' || targetId === 'view-cambiar-avatar') ? 'view-perfil' : targetId;
-    navItems.forEach(btn => btn.classList.toggle('active', btn.dataset.view === navTarget));
-    mobBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.view === navTarget));
-    if (sidebar) sidebar.classList.remove('open');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  document.querySelectorAll('[data-view]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (el.dataset.mueble) {
-        const cardImg = el.querySelector('img');
-        const imgSrc = cardImg ? cardImg.getAttribute('src') : null;
-        cargarMueble(el.dataset.mueble, imgSrc);
-      }
-      switchView(el.dataset.view);
-    });
-  });
-
-  const btnMenu = document.getElementById('btn-mobile-menu');
-  if (btnMenu && sidebar) {
-    btnMenu.addEventListener('click', () => sidebar.classList.toggle('open'));
-  }
-
-  // Controles de transformacion de la imagen 3D
-  const guiaImgEl = document.getElementById('guia3d-img');
-
-  function applyImageTransform() {
-    if (!guiaImgEl) return;
-    const scaleVal = zoomed ? 1.25 : 1;
-    guiaImgEl.style.transform = `rotate(${rot}deg) scale(${scaleVal})`;
-  }
-
-  document.getElementById('btn-rotate-3d').addEventListener('click', () => {
-    rot = (rot + 90) % 360;
-    applyImageTransform();
-  });
-
-  document.getElementById('btn-prev-angle').addEventListener('click', () => {
-    rot = (rot - 45 + 360) % 360;
-    applyImageTransform();
-  });
-
-  document.getElementById('btn-next-angle').addEventListener('click', () => {
-    rot = (rot + 45) % 360;
-    applyImageTransform();
-  });
-
-  document.getElementById('btn-toggle-wire').addEventListener('click', () => {
-    zoomed = !zoomed;
-    applyImageTransform();
-  });
-
-  document.getElementById('btn-fit-view').addEventListener('click', () => {
-    rot = 0;
-    zoomed = false;
-    applyImageTransform();
-  });
-
-  // Controles de reproduccion en Guia 3D
-  document.getElementById('btn-play-step').addEventListener('click', () => {
-    if (isPlayingAudio) {
-      pauseAudioPlayback();
-    } else {
-      if (audioElapsed >= audioDuration) audioElapsed = 0;
-      startAudioPlayback(false);
-    }
-  });
-
-  document.getElementById('btn-step-pause').addEventListener('click', pauseAudioPlayback);
-
-  document.getElementById('btn-step-prev').addEventListener('click', () => {
-    if (audioElapsed > 5) {
-      audioElapsed = Math.max(0, audioElapsed - 10);
-      updateAudioUI();
-    } else if (pasoIndiceActual > 0) {
-      seleccionarPasoGuia(pasoIndiceActual - 1);
-    } else {
-      audioElapsed = 0;
-      updateAudioUI();
-    }
-  });
-
-  document.getElementById('btn-step-next').addEventListener('click', () => {
-    const totalPasos = MUEBLES_DB[muebleActualId].pasos.length;
-    if (pasoIndiceActual < totalPasos - 1) {
-      seleccionarPasoGuia(pasoIndiceActual + 1);
-    } else {
-      audioElapsed = audioDuration;
-      pauseAudioPlayback();
-      updateAudioUI();
-    }
-  });
-
-  // Audio-guia reproductor y velocidad de voz
-  document.querySelectorAll('.speed-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.speed-pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      speechRate = parseFloat(btn.dataset.rate);
-    });
-  });
-
-  document.getElementById('btn-speak-step').addEventListener('click', () => {
-    if (isPlayingAudio) {
-      pauseAudioPlayback();
-    } else {
-      if (audioElapsed >= audioDuration) audioElapsed = 0;
-      startAudioPlayback(true);
-    }
-  });
-
-  // Modal
-  const modalOverlay = document.getElementById('modal-overlay');
-  function openModal(title, html) {
-    document.getElementById('modal-title').textContent = title;
-    document.getElementById('modal-body').innerHTML = html;
-    modalOverlay.classList.remove('hidden');
-  }
-  document.getElementById('btn-close-modal').addEventListener('click', () => modalOverlay.classList.add('hidden'));
-
-  // Guardar cambios de Editar Perfil
-  const editProfileForm = document.getElementById('edit-profile-form');
-  if (editProfileForm) {
-    editProfileForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newName = document.getElementById('edit-prof-name').value.trim();
-      const newEmail = document.getElementById('edit-prof-email').value.trim();
-      const errBox = document.getElementById('edit-profile-error');
-
-      if (!newName || !newEmail.includes('@')) {
-        errBox.textContent = 'Ingresa un nombre y un correo electronico valido.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-
-      errBox.classList.add('hidden');
-      document.getElementById('profile-display-name').textContent = newName;
-      document.getElementById('profile-display-email').textContent = newEmail;
-      document.getElementById('topbar-user-name').textContent = newName;
-      document.getElementById('home-greeting-title').textContent = `Hola, ${newName}`;
-      document.getElementById('home-breadcrumb-name').textContent = `Hola, ${newName}`;
-
-      switchView('view-perfil');
-      openModal('Perfil actualizado', `<p>Tus datos se guardaron correctamente como <strong>${newName}</strong>.</p>`);
-    });
-  }
-
-  // Cambiar Avatar
-  let pendingAvatarSrc = null;
-  const inputAvatarFile = document.getElementById('input-avatar-file');
-  const avatarPreviewImg = document.getElementById('avatar-preview-img');
-
-  if (inputAvatarFile) {
-    inputAvatarFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      document.getElementById('avatar-file-label').textContent = file.name;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        pendingAvatarSrc = ev.target.result;
-        avatarPreviewImg.src = pendingAvatarSrc;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  document.querySelectorAll('.preset-avatar-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      pendingAvatarSrc = btn.dataset.src;
-      avatarPreviewImg.src = pendingAvatarSrc;
-    });
-  });
-
-  const btnSaveAvatar = document.getElementById('btn-save-avatar');
-  if (btnSaveAvatar) {
-    btnSaveAvatar.addEventListener('click', () => {
-      if (pendingAvatarSrc) {
-        const mainAvatar = document.getElementById('profile-main-avatar');
-        mainAvatar.style.display = 'block';
-        mainAvatar.src = pendingAvatarSrc;
-
-        const topbarWrap = document.getElementById('topbar-avatar-wrap');
-        topbarWrap.innerHTML = `<img src="${pendingAvatarSrc}" alt="Avatar" />`;
-      }
-      switchView('view-perfil');
-      openModal('Avatar actualizado', '<p>Tu nueva foto de perfil se aplico correctamente.</p>');
-    });
-  }
-
-  // Buscador y QR
-  const searchForm = document.getElementById('global-search-form');
-  if (searchForm) {
-    searchForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const q = document.getElementById('global-search-input').value.trim();
-      if (q) switchView('view-catalogo');
-    });
-  }
-
-  document.getElementById('btn-open-qr').addEventListener('click', () => {
-    openModal('Escanear QR', '<p>Apunta la camara al codigo QR de tu caja para cargar el manual 3D.</p>');
-  });
-
-  // Accesibilidad Visual: interruptor maestro, tamano de texto, tema y contraste
-  const chkAccMaster = document.getElementById('chk-acc-master');
-  if (chkAccMaster) {
-    chkAccMaster.addEventListener('change', applyAccessibilitySettings);
-  }
-
-  document.querySelectorAll('.acc-size-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.acc-size-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      accFontSizeClass = btn.dataset.size;
-      applyAccessibilitySettings();
-    });
-  });
-
-  document.querySelectorAll('.acc-theme-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.acc-theme-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      accThemeMode = btn.dataset.theme;
-      applyAccessibilitySettings();
-    });
-  });
-
-  document.querySelectorAll('.acc-contrast-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.acc-contrast-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      accContrastMode = btn.dataset.contrast;
-      applyAccessibilitySettings();
-    });
-  });
-
-  applyAccessibilitySettings();
-
-  // Catalogo filtros
-  document.querySelectorAll('#view-catalogo .cat-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('#view-catalogo .cat-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      const f = pill.dataset.filter;
-      document.querySelectorAll('.catalog-item-card').forEach(card => {
-        card.style.display = (f === 'todos' || card.dataset.category === f) ? 'block' : 'none';
-      });
-    });
-  });
-
-  // Entorno 360 eventos
-  viewCards.forEach((card, idx) => card.addEventListener('click', () => select360View(idx)));
-  document.getElementById('btn-cycle-360').addEventListener('click', () => select360View(viewIdx + 1));
-
-  // Comandos de voz
-  document.querySelectorAll('.soft-cmd-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.getElementById('voice-status-text').textContent = `Comando ejecutado: "${btn.dataset.cmd}"`;
-    });
-  });
-
-  // Cargar instrucciones
-  ['btn-upload-pdf', 'btn-upload-photo', 'btn-upload-audio'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('click', () => switchView('view-guia3d'));
-  });
-
-  // Soporte Tecnico formulario
-  document.getElementById('support-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const err = document.getElementById('support-error-box');
-    const name = document.getElementById('sup-name').value.trim();
-    const email = document.getElementById('sup-email').value.trim();
-    const desc = document.getElementById('sup-desc').value.trim();
-    if (!name || !email.includes('@') || !desc) {
-      err.textContent = 'Completa tu nombre, correo valido y descripcion.';
-      err.classList.remove('hidden');
-      return;
-    }
-    err.classList.add('hidden');
-    openModal('Solicitud enviada', `<p>Gracias <strong>${name}</strong>, nuestro equipo tecnico te respondera a <strong>${email}</strong>.</p>`);
-    e.target.reset();
-  });
 });
