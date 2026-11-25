@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EZASSEMBLY - Asistente de Ensamblaje Inteligente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="theme-light font-normal">
+
+  <!-- =========================================================
+       TOPBAR AZUL OSCURO (SIN CONTRASTE NI TEMA)
+  ========================================================== -->
+  <header class="topbar" role="banner">
+    <div class="topbar-left">
+      <button id="btn-mobile-menu" class="icon-btn mobile-only" aria-label="Menu">MENU</button>
+      <a href="#inicio" class="brand" data-view="view-inicio">
+        <span class="brand-logo-box">EZ</span>
+        <span class="brand-name">EZASSEMBLY</span>
+      </a>
+    </div>
+
+    <form id="global-search-form" class="search-bar" role="search">
+      <input type="text" id="global-search-input" placeholder="Buscar muebles, codigos o piezas..." autocomplete="off" />
+      <button type="button" id="btn-open-qr" class="qr-pill">QR</button>
+    </form>
+
+    <div class="topbar-actions">
+      <button class="top-ghost-btn nav-trigger" data-view="view-notificaciones" title="Notificaciones">ALERTAS</button>
+      <button class="user-profile-pill nav-trigger" data-view="view-perfil">
+        <span class="avatar-circle" id="topbar-avatar-wrap">LA</span>
+        <span class="desktop-only" id="topbar-user-name">NOMBRE_USUARIO</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- =========================================================
+         SIDEBAR IZQUIERDO
+    ========================================================== -->
+    <aside id="desktop-sidebar" class="sidebar" aria-label="Navegacion principal">
+      <div class="sidebar-groups">
+        <div class="nav-group">
+          <span class="nav-group-label">MI ESPACIO</span>
+          <button class="nav-item active" data-view="view-inicio">Inicio</button>
+          <button class="nav-item" data-view="view-proyectos">Proyectos</button>
+          <button class="nav-item" data-view="view-catalogo">Catalogo</button>
+          <button class="nav-item" data-view="view-perfil">Perfil</button>
+        </div>
+
+        <div class="nav-group">
+          <span class="nav-group-label">ENSAMBLAJE</span>
+          <button class="nav-item" data-view="view-guia3d">Guia 3D</button>
+          <button class="nav-item" data-view="view-ar">Realidad Aumentada</button>
+          <button class="nav-item" data-view="view-entorno360">Entorno Virtual 360</button>
+          <button class="nav-item" data-view="view-audioguia">Audio-guia</button>
+          <button class="nav-item" data-view="view-voz">Comandos de voz</button>
+          <button class="nav-item" data-view="view-herrajes">Herrajes alternativos</button>
+          <button class="nav-item" data-view="view-preparacion">Preparación previa</button>
+          <button class="nav-item" data-view="view-piezas">Piezas y herrajes</button>
+        </div>
+
+        <div class="nav-group nav-group-bottom">
+          <button class="nav-item" data-view="view-accesibilidad">Accesibilidad visual</button>
+          <button class="nav-item" data-view="view-soporte">Soporte Tecnico</button>
+          <button class="nav-item" data-view="view-notificaciones">Notificaciones</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =========================================================
+         AREA PRINCIPAL DE VISTAS
+    ========================================================== -->
+    <main id="main-content" class="main-content" role="main">
+
+      <!-- 1. INICIO -->
+      <section id="view-inicio" class="view-section active">
+        <div class="page-top-bar">
+          <div>
+            <p class="breadcrumb">Mi espacio &gt; <strong id="home-breadcrumb-name">Hola, NOMBRE_USUARIO</strong></p>
+            <h1 id="home-greeting-title">Hola, NOMBRE_USUARIO</h1>
+            <p class="subtitle">Que mueble quieres armar hoy</p>
+          </div>
+          <span class="course-tag">CODIGO_CURSO - NOMBRE_GRUPO</span>
+        </div>
+
+        <div class="hero-card-blue">
+          <div class="hero-card-content">
+            <h2>Tu asistente de ensamblaje inteligente</h2>
+            <p>Arma, aprende y disfruta tu espacio.</p>
+            <button class="btn-bright-blue nav-trigger" data-view="view-proyectos">Ver mis proyectos &rarr;</button>
+          </div>
+          <div class="hero-card-img">
+            <img src="../assets/images/imagen1.png" alt="Mueble principal" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="img-slot-box" style="display:none;"><span>imagen1.png</span></div>
+          </div>
+        </div>
+
+        <div class="home-pills-row">
+          <button class="home-action-pill nav-trigger" data-view="view-catalogo">
+            <span>Catalogo de Temporada</span>
+            <span class="arrow-blue">&gt;</span>
+          </button>
+          <button class="home-action-pill nav-trigger" data-view="view-cargar">
+            <span>Cargar Instrucciones</span>
+            <span class="arrow-blue">&gt;</span>
+          </button>
+          <button class="home-action-pill nav-trigger" data-view="view-soporte">
+            <span>Soporte Tecnico</span>
+            <span class="arrow-blue">&gt;</span>
+          </button>
+          <button class="home-action-pill nav-trigger" data-view="view-accesibilidad">
+            <span>Configuracion</span>
+            <span class="arrow-blue">&gt;</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. CARGAR INSTRUCCIONES -->
+      <section id="view-cargar" class="view-section">
+        <p class="breadcrumb">Mi espacio &gt; <strong>Cargar Instrucciones</strong></p>
+        <h1>Cargar Instrucciones</h1>
+        <p class="subtitle">Que mueble quieres armar hoy</p>
+
+        <div class="hero-card-blue" style="margin-top: 1.25rem;">
+          <div class="hero-card-content">
+            <h2>Inserta tu manual de la forma que quieras</h2>
+          </div>
+          <div class="hero-card-img">
+            <img src="../assets/images/imagen1.png" alt="Manual mueble" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="img-slot-box" style="display:none;"><span>imagen1.png</span></div>
+          </div>
+        </div>
+
+        <div class="upload-cards-3">
+          <button class="upload-option-card" id="btn-upload-pdf">
+            <span class="upload-tag">PDF</span>
+            <strong>Insertar PDF</strong>
+          </button>
+          <button class="upload-option-card" id="btn-upload-photo">
+            <span class="upload-tag">CAMARA</span>
+            <strong>Tomar foto</strong>
+          </button>
+          <button class="upload-option-card" id="btn-upload-audio">
+            <span class="upload-tag">AUDIO</span>
+            <strong>Ingresar audio</strong>
+          </button>
+        </div>
+
+        <button class="btn-bright-blue nav-trigger" data-view="view-inicio" style="margin-top: 1.5rem;">&larr; Volver atras</button>
+      </section>
+
+      <!-- 3. PROYECTOS / FICHA TECNICA -->
+      <section id="view-proyectos" class="view-section">
+        <p class="breadcrumb">Mi espacio &gt; <strong>Proyectos</strong></p>
+        <h1>Proyectos</h1>
+
+        <div class="ficha-split-grid" style="margin-top: 1.25rem;">
+          <div class="surface-card">
+            <div class="ficha-photo-wrap">
+              <img id="ficha-img" src="../assets/images/imagen2.png" alt="Mueble proyecto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box large" style="display:none;"><span id="ficha-img-fallback">imagen2.png</span></div>
+            </div>
+            <div class="ficha-title-row">
+              <h2 id="ficha-title">Escritorio Nordico</h2>
+              <span class="badge-green">Nuevo</span>
+            </div>
+            <p class="subtitle" id="ficha-subtitle">Estilo moderno - Madera melamina</p>
+          </div>
+
+          <div class="ficha-right-col">
+            <div class="surface-card">
+              <div class="spec-row">
+                <span class="spec-label">Tiempo de armado</span>
+                <strong id="ficha-time">45 minutos</strong>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Dificultad</span>
+                <strong id="ficha-diff">Media</strong>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Herrajes requeridos</span>
+                <strong id="ficha-hw">Tornillos, tarugos, pernos</strong>
+              </div>
+            </div>
+
+            <div class="surface-card">
+              <h3>Dimensiones</h3>
+              <div class="dims-grid-3">
+                <div class="dim-box"><span>Alto</span><strong id="ficha-alto">75 cm</strong></div>
+                <div class="dim-box"><span>Ancho</span><strong id="ficha-ancho">120 cm</strong></div>
+                <div class="dim-box"><span>Fondo</span><strong id="ficha-fondo">60 cm</strong></div>
+              </div>
+            </div>
+
+            <button class="btn-bright-blue full-width nav-trigger" data-view="view-guia3d">Ver guia 3D</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. CATALOGO DE TEMPORADA -->
+      <section id="view-catalogo" class="view-section">
+        <p class="breadcrumb">Mi espacio &gt; <strong>Catalogo de Temporada</strong></p>
+        <h1>Catalogo de Temporada</h1>
+
+        <div class="filter-row">
+          <button class="cat-pill active" data-filter="todos">Todos</button>
+          <button class="cat-pill" data-filter="salas">Salas</button>
+          <button class="cat-pill" data-filter="dormitorios">Dormitorios</button>
+          <button class="cat-pill" data-filter="oficina">Oficina</button>
+          <button class="cat-pill" data-filter="comedor">Comedor</button>
+          <span class="badge-green">Nuevo</span>
+        </div>
+
+        <div class="catalog-grid-4">
+          <article class="catalog-item-card nav-trigger" data-view="view-proyectos" data-category="oficina" data-mueble="m1">
+            <div class="cat-img-wrap">
+              <span class="badge-blue-corner">Nuevo</span>
+              <img src="../assets/images/imagen2.png" alt="Escritorio Nordico" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box" style="display:none;"><span>imagen2.png</span></div>
+            </div>
+            <h3>Escritorio Nordico</h3>
+            <p class="cat-sub">1 armado - 45 min</p>
+            <span class="diff-text diff-med">Dificultad: Media</span>
+          </article>
+
+          <article class="catalog-item-card nav-trigger" data-view="view-proyectos" data-category="oficina" data-mueble="m2">
+            <div class="cat-img-wrap">
+              <span class="badge-blue-corner">Nuevo</span>
+              <img src="../assets/images/imagen3.png" alt="Estante Vertical" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box" style="display:none;"><span>imagen3.png</span></div>
+            </div>
+            <h3>Estante Vertical</h3>
+            <p class="cat-sub">1 armado - 60 min</p>
+            <span class="diff-text diff-low">Dificultad: Baja</span>
+          </article>
+
+          <article class="catalog-item-card nav-trigger" data-view="view-proyectos" data-category="salas" data-mueble="m3">
+            <div class="cat-img-wrap">
+              <span class="badge-blue-corner">Nuevo</span>
+              <img src="../assets/images/imagen4.png" alt="Mesa de Centro" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box" style="display:none;"><span>imagen4.png</span></div>
+            </div>
+            <h3>Mesa de Centro</h3>
+            <p class="cat-sub">1 armado - 30 min</p>
+            <span class="diff-text diff-low">Dificultad: Baja</span>
+          </article>
+
+          <article class="catalog-item-card nav-trigger" data-view="view-proyectos" data-category="dormitorios" data-mueble="m4">
+            <div class="cat-img-wrap">
+              <span class="badge-blue-corner">Nuevo</span>
+              <img src="../assets/images/imagen5.png" alt="Comoda 3 Cajones" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box" style="display:none;"><span>imagen5.png</span></div>
+            </div>
+            <h3>Comoda 3 Cajones</h3>
+            <p class="cat-sub">1 armado - 50 min</p>
+            <span class="diff-text diff-med">Dificultad: Media</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- 5. GUIA 3D - PASO A PASO -->
+      <section id="view-guia3d" class="view-section">
+        <p class="breadcrumb">Ficha tecnica &gt; <strong>Guia 3D - Paso a paso</strong></p>
+        <h1 id="guia3d-main-heading">Guia 3D - Paso a paso (Escritorio Nordico)</h1>
+
+        <div class="viewer-2col" style="margin-top: 1.25rem;">
+          <div class="surface-card viewer-main-card">
+            <div class="viewer-inner-layout">
+              <div class="thumbs-vertical" id="guia3d-steps-buttons"></div>
+
+              <div class="viewer-canvas" id="model-3d-box">
+                <img id="guia3d-img" src="../assets/images/imagen2.png" alt="Vista paso 3D" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="img-slot-box large" style="display:none;"><span id="guia3d-img-fallback">Vista 3D</span></div>
+              </div>
+            </div>
+            <div class="viewer-bottom-circles">
+              <button class="circle-tool active" id="btn-fit-view" title="Centrar vista">FIT</button>
+              <button class="circle-tool" id="btn-prev-angle" title="Girar izquierda">&lt;</button>
+              <button class="circle-tool" id="btn-rotate-3d" title="Rotar 360">360</button>
+              <button class="circle-tool" id="btn-toggle-wire" title="Zoom pieza">3D</button>
+              <button class="circle-tool" id="btn-next-angle" title="Girar derecha">&gt;&gt;</button>
+            </div>
+          </div>
+
+          <div class="ficha-right-col">
+            <div class="surface-card instruction-scalable-card">
+              <span class="soft-blue-pill" id="step-pill-label">Paso 1 de 6</span>
+              <h2 id="step-title-label" class="instruction-title-text" style="margin-top: 0.6rem;">Revision de tableros y herrajes</h2>
+              <div class="progress-track"><div class="progress-fill" id="step-progress-fill" style="width: 16%;"></div></div>
+              <p class="subtitle instruction-body-text" id="guia3d-step-desc">Identifica el tablero superior, patas y bolsa de pernos.</p>
+            </div>
+
+            <div class="surface-card">
+              <h3>Reproduccion del paso</h3>
+              <div class="player-row">
+                <button class="play-circle-btn" id="btn-play-step">PLAY</button>
+                <div class="player-bar-wrap">
+                  <span class="time-text" id="audio-time-display">00:00 / 00:45</span>
+                  <div class="progress-track"><div class="progress-fill" id="audio-progress-fill" style="width: 0%;"></div></div>
+                </div>
+              </div>
+              <div class="playback-circles">
+                <button class="playback-item" id="btn-step-prev"><span class="p-circle">&lt;&lt;</span><small>Rebobinar</small></button>
+                <button class="playback-item" id="btn-step-pause"><span class="p-circle">||</span><small>Pausar</small></button>
+                <button class="playback-item" id="btn-step-next"><span class="p-circle">&gt;&gt;</span><small>Avanzar</small></button>
+              </div>
+            </div>
+
+            <button class="soft-back-btn nav-trigger" data-view="view-proyectos">&larr; Volver a ficha tecnica</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. REALIDAD AUMENTADA -->
+      <section id="view-ar" class="view-section">
+        <p class="breadcrumb">Guia 3D &gt; <strong>Realidad Aumentada</strong></p>
+        <h1 id="ar-main-heading">Realidad Aumentada - Escritorio Nordico</h1>
+        <p class="subtitle">Coloca el mueble en tu entorno real</p>
+
+        <div class="viewer-2col" style="margin-top: 1.25rem;">
+          <div class="surface-card">
+            <div class="ar-stage-box">
+              <img id="ar-img" src="../assets/images/imagen2.png" alt="Realidad aumentada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box large" style="display:none;"><span>VISTA AR DEL MUEBLE</span></div>
+              <div class="ar-floor-hint" id="ar-hint-text">Apunta al piso para colocar: Escritorio Nordico</div>
+            </div>
+          </div>
+
+          <div class="ficha-right-col">
+            <div class="surface-card">
+              <h3>Coloca el mueble en un entorno real</h3>
+              <p class="subtitle" style="margin-top: 0.4rem;">Apunta al piso para colocar el mueble seleccionado en tu espacio.</p>
+            </div>
+            <button class="soft-back-btn nav-trigger" data-view="view-guia3d">Regresar</button>
+            <button class="btn-bright-blue full-width nav-trigger" data-view="view-entorno360">360 grados</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. ENTORNO VIRTUAL 360 -->
+      <section id="view-entorno360" class="view-section">
+        <p class="breadcrumb">Ensamblaje &gt; <strong>Entorno Virtual 360</strong></p>
+        <h1 id="entorno360-main-heading">Entorno Virtual 360 - Escritorio Nordico</h1>
+        <p class="subtitle" id="entorno360-subtitle">Visualiza como quedaria tu Escritorio Nordico en un ambiente simulado</p>
+
+        <div class="viewer-2col" style="margin-top: 1.25rem;">
+          <div class="surface-card">
+            <div class="ar-stage-box">
+              <img id="img-360-main" src="../assets/images/imagen2.png" alt="Entorno 360" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="img-slot-box large" style="display:none;"><span id="view-360-title">ENTORNO VIRTUAL 360 - ESCRITORIO NORDICO</span></div>
+              <div class="ar-floor-hint" id="view-360-desc">Vista frontal completa de Escritorio Nordico en ambiente simulado</div>
+            </div>
+          </div>
+
+          <div class="ficha-right-col">
+            <div class="surface-card">
+              <h3>Ambientes y vistas</h3>
+              <span class="soft-blue-pill" id="badge-vista-actual" style="margin: 0.5rem 0 0.85rem;">Vista frontal</span>
+
+              <div class="view-cards-list">
+                <button class="view-option-card active" data-view-key="frontal" data-angle="Frontal" data-info="Vista frontal completa">
+                  <strong>Frontal</strong>
+                </button>
+                <button class="view-option-card" data-view-key="lateral" data-angle="Lateral" data-info="Vista lateral de profundidad">
+                  <strong>Lateral</strong>
+                </button>
+                <button class="view-option-card" data-view-key="perspectiva" data-angle="Perspectiva" data-info="Vista en perspectiva de ambiente">
+                  <strong>Perspectiva</strong>
+                </button>
+              </div>
+
+              <button class="btn-bright-blue full-width" id="btn-cycle-360" style="margin-top: 1rem;">Cambiar vista</button>
+            </div>
+            <button class="soft-back-btn nav-trigger" data-view="view-inicio">&larr; Regresar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. AUDIO-GUIA -->
+      <section id="view-audioguia" class="view-section">
+        <p class="breadcrumb">Comandos de voz &gt; <strong>Audio-guia</strong></p>
+        <h1 id="audioguia-main-heading">Audio-guia - Escritorio Nordico</h1>
+        <p class="subtitle" id="audioguia-subtitle">Escucha las instrucciones del Paso 1 de 6 (Revision de tableros y herrajes)</p>
+
+        <div class="equal-2col" style="margin-top: 1.25rem;">
+          <div class="surface-card">
+            <h3>Reproductor</h3>
+            <div class="player-row" style="margin: 1rem 0;">
+              <button class="play-circle-btn" id="btn-speak-step">PLAY</button>
+              <div class="player-bar-wrap">
+                <span class="time-text" id="audioguia-time-display">00:00 / 00:45</span>
+                <div class="progress-track"><div class="progress-fill" id="audioguia-progress-fill" style="width: 0%;"></div></div>
+              </div>
+            </div>
+
+            <p style="font-weight: 600; margin-bottom: 0.5rem;">Velocidad de voz</p>
+            <div class="speed-pills-3">
+              <button class="speed-pill" data-rate="0.75">0.75x</button>
+              <button class="speed-pill active" data-rate="1">1x</button>
+              <button class="speed-pill" data-rate="1.25">1.25x</button>
+            </div>
+
+            <button class="soft-back-btn nav-trigger" data-view="view-guia3d" style="margin-top: 1.25rem;">Ver Guia 3D</button>
+          </div>
+
+          <div class="surface-card instruction-scalable-card">
+            <h3 id="audioguia-transcript-heading">Instrucciones del paso actual</h3>
+            <div class="audio-steps-list instruction-body-text" id="audio-steps-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. COMANDOS DE VOZ -->
+      <section id="view-voz" class="view-section">
+        <p class="breadcrumb">Cargar Instrucciones &gt; <strong>Comandos de voz</strong></p>
+        <h1>Comandos de voz</h1>
+        <p class="subtitle">Te escucha para entenderte</p>
+
+        <div class="viewer-2col" style="margin-top: 1.25rem;">
+          <div class="surface-card voice-center-card">
+            <div class="mic-circle-outer">
+              <div class="mic-circle-inner">MIC</div>
+            </div>
+            <h2 id="voice-status-text">Escuchando...</h2>
+          </div>
+
+          <div class="surface-card">
+            <p class="subtitle" style="margin-bottom: 0.85rem;">Ejemplos de comandos:</p>
+            <div class="voice-cmds-stack">
+              <button class="soft-cmd-btn" data-cmd="Siguiente paso">Siguiente paso</button>
+              <button class="soft-cmd-btn" data-cmd="Parar">Parar</button>
+              <button class="soft-cmd-btn" data-cmd="Cancelar">Cancelar</button>
+              <button class="btn-bright-blue full-width nav-trigger" data-view="view-audioguia">Escuchar Instrucciones</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. HERRAJES ALTERNATIVOS -->
+      <section id="view-herrajes" class="view-section">
+        <p class="breadcrumb">Ensamblaje &gt; <strong>Herrajes alternativos</strong></p>
+        <h1 id="herrajes-main-heading">Herrajes alternativos - Escritorio Nordico</h1>
+        <p class="subtitle" id="herrajes-subtitle">Equivalencias compatibles segun las piezas que utiliza este mueble</p>
+
+        <div class="filter-row" id="herrajes-tabs-row"></div>
+        <div class="hw-grid-3" id="herrajes-cards-grid"></div>
+
+        <div class="security-banner" id="herrajes-security-banner">
+          <strong id="herrajes-security-title">Nivel de seguridad</strong>
+          <p id="herrajes-security-desc">Selecciona una categoria de herraje para verificar su compatibilidad estructural.</p>
+        </div>
+      </section>
+
+      <!-- 11. MODO ACCESIBILIDAD VISUAL -->
+      <section id="view-accesibilidad" class="view-section">
+        <p class="breadcrumb">Configuracion &gt; <strong>Modo Accesibilidad Visual</strong></p>
+        <h1>Modo Accesibilidad Visual</h1>
+
+        <div class="equal-2col" style="margin-top: 1.25rem;">
+          <div class="surface-card">
+            <div class="toggle-line">
+              <strong>Modo Accesibilidad Visual</strong>
+              <input type="checkbox" id="chk-acc-master" checked />
+            </div>
+
+            <p style="font-weight: 600; margin: 1rem 0 0.5rem;">Tamano de texto e instrucciones</p>
+            <div class="speed-pills-3">
+              <button class="acc-size-btn active" data-size="font-normal" data-pct="+0%">Normal</button>
+              <button class="acc-size-btn" data-size="font-large" data-pct="+25%">Grande</button>
+              <button class="acc-size-btn" data-size="font-xlarge" data-pct="+45%">Extra grande</button>
+            </div>
+            <p class="subtitle" id="acc-size-pct-label" style="text-align: right; margin-top: 0.35rem;">+0% (Tamano estandar)</p>
+
+            <p style="font-weight: 600; margin: 1rem 0 0.5rem;">Tema de interfaz</p>
+            <div class="contrast-pills-2">
+              <button class="acc-theme-btn active" data-theme="light">Claro</button>
+              <button class="acc-theme-btn" data-theme="dark">Oscuro</button>
+            </div>
+
+            <p style="font-weight: 600; margin: 1rem 0 0.5rem;">Contraste</p>
+            <div class="contrast-pills-2">
+              <button class="acc-contrast-btn active" data-contrast="standard">Estandar</button>
+              <button class="acc-contrast-btn" data-contrast="high">Alto contraste</button>
+            </div>
+          </div>
+
+          <div class="dark-preview-card" id="acc-preview-box">
+            <span style="color: #CBD5E1; font-size: 0.9rem;">Vista previa en vivo</span>
+            <h2 id="acc-preview-heading">Instrucciones mas legibles y mayor contraste.</h2>
+            <div class="preview-white-pill" id="acc-preview-pill">
+              <span class="step-badge-num">1</span>
+              <div>
+                <small id="acc-preview-step-tag" style="color: #64748B;">Paso 1</small>
+                <strong id="acc-preview-step-text" style="display: block; color: #0F172A;">Insertar perno en el orificio del panel lateral.</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. SOPORTE TECNICO -->
+      <section id="view-soporte" class="view-section">
+        <p class="breadcrumb">Mi espacio &gt; <strong>Soporte Tecnico</strong></p>
+        <h1>Soporte Tecnico</h1>
+        <p class="subtitle">Necesitas ayuda. Estamos para ti.</p>
+
+        <div class="viewer-2col" style="margin-top: 1.25rem;">
+          <form id="support-form" class="surface-card" novalidate>
+            <div class="form-group">
+              <label for="sup-type">Tipo de solicitud</label>
+              <select id="sup-type" required>
+                <option value="">Selecciona una opcion</option>
+                <option value="pieza">Pieza faltante o danada</option>
+                <option value="duda">Duda en paso de ensamblaje</option>
+              </select>
+            </div>
+
+            <div class="form-2col-inputs">
+              <div class="form-group">
+                <label for="sup-name">Nombre completo</label>
+                <input type="text" id="sup-name" placeholder="Tu nombre" required />
+              </div>
+              <div class="form-group">
+                <label for="sup-email">Correo electronico</label>
+                <input type="email" id="sup-email" placeholder="tu@correo.com" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sup-desc">Descripcion del problema</label>
+              <textarea id="sup-desc" rows="4" placeholder="Cuentanos que ocurrio..." required></textarea>
+            </div>
+
+            <div id="support-error-box" class="form-error hidden"></div>
+            <button type="submit" class="btn-bright-blue">Enviar solicitud</button>
+          </form>
+
+          <div class="surface-card">
+            <h3>Adjuntar fotos</h3>
+            <label class="dropzone-box" for="sup-photo">
+              <span>Seleccionar imagenes</span>
+              <input type="file" id="sup-photo" accept="image/*" style="display:none;" />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13. NOTIFICACIONES -->
+      <section id="view-notificaciones" class="view-section">
+        <p class="breadcrumb">Configuracion &gt; <strong>Notificaciones</strong></p>
+        <h1>Notificaciones</h1>
+        <div class="surface-card" style="max-width: 680px; margin-top: 1.25rem;">
+          <label class="toggle-line">
+            <div><strong>Soporte tecnico</strong><p class="subtitle">Alertas de ayuda y respuestas.</p></div>
+            <input type="checkbox" checked />
+          </label>
+          <label class="toggle-line">
+            <div><strong>Recordatorios de armado</strong><p class="subtitle">Recordatorios de proyectos en curso.</p></div>
+            <input type="checkbox" checked />
+          </label>
+          <label class="toggle-line" style="border:none;">
+            <div><strong>Novedades y promociones</strong><p class="subtitle">Nuevos muebles y ofertas.</p></div>
+            <input type="checkbox" />
+          </label>
+        </div>
+      </section>
+
+      <!-- 14. MI PERFIL -->
+      <section id="view-perfil" class="view-section">
+        <p class="breadcrumb">Mi espacio &gt; <strong>Mi perfil</strong></p>
+        <h1>Mi perfil</h1>
+        <div class="ficha-split-grid" style="margin-top: 1.25rem;">
+          <div class="surface-card" style="text-align: center;">
+            <img id="profile-main-avatar" src="../assets/images/imagen7.png" alt="Avatar usuario" style="width:92px; height:92px; border-radius:50%; object-fit:cover; margin: 0 auto 0.85rem; display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="profile-big-avatar" id="profile-fallback-initials" style="display:none;">LA</div>
+            <h2 id="profile-display-name">NOMBRE_COMPLETO_USUARIO</h2>
+            <p class="subtitle" id="profile-display-email">CORREO_USUARIO@DOMINIO.COM</p>
+          </div>
+          <div class="surface-card">
+            <button class="profile-menu-row nav-trigger" data-view="view-editar-perfil"><span>Editar perfil</span><span>&gt;</span></button>
+            <button class="profile-menu-row nav-trigger" data-view="view-cambiar-avatar"><span>Cambiar avatar</span><span>&gt;</span></button>
+            <button class="profile-menu-row nav-trigger" data-view="view-accesibilidad"><span>Configuracion</span><span>&gt;</span></button>
+            <button class="profile-menu-row nav-trigger" data-view="view-soporte"><span>Ayuda</span><span>&gt;</span></button>
+            <button class="profile-menu-row" id="btn-logout-profile" style="border:none;"><span>Cerrar sesion</span><span>&gt;</span></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 15. EDITAR PERFIL -->
+      <section id="view-editar-perfil" class="view-section">
+        <p class="breadcrumb">Mi perfil &gt; <strong>Editar perfil</strong></p>
+        <h1>Editar perfil</h1>
+        <p class="subtitle">Actualiza tus datos basicos de cuenta</p>
+
+        <form id="edit-profile-form" class="surface-card" style="max-width: 600px; margin-top: 1.25rem;" novalidate>
+          <div class="form-group">
+            <label for="edit-prof-name">Nombre completo</label>
+            <input type="text" id="edit-prof-name" placeholder="Ingresa tu nombre completo" required />
+          </div>
+
+          <div class="form-group">
+            <label for="edit-prof-email">Correo electronico</label>
+            <input type="email" id="edit-prof-email" placeholder="tu@correo.com" required />
+          </div>
+
+          <div id="edit-profile-error" class="form-error hidden"></div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+            <button type="submit" class="btn-bright-blue">Guardar cambios</button>
+            <button type="button" class="soft-back-btn nav-trigger" data-view="view-perfil" style="width: auto;">Cancelar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 16. CAMBIAR AVATAR -->
+      <section id="view-cambiar-avatar" class="view-section">
+        <p class="breadcrumb">Mi perfil &gt; <strong>Cambiar avatar</strong></p>
+        <h1>Cambiar avatar</h1>
+        <p class="subtitle">Sube una imagen desde tu dispositivo o elige una predeterminada</p>
+
+        <div class="equal-2col" style="max-width: 780px; margin-top: 1.25rem;">
+          <div class="surface-card" style="text-align: center;">
+            <p style="font-weight: 600; margin-bottom: 1rem;">Vista previa del avatar</p>
+            <img id="avatar-preview-img" src="../assets/images/imagen7.png" alt="Vista previa avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; display: block; border: 3px solid var(--primary-blue);" />
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+              <button type="button" class="btn-bright-blue" id="btn-save-avatar">Guardar avatar</button>
+              <button type="button" class="soft-back-btn nav-trigger" data-view="view-perfil" style="width: auto;">Cancelar</button>
+            </div>
+          </div>
+
+          <div class="surface-card">
+            <h3>Subir nueva foto</h3>
+            <label class="dropzone-box" for="input-avatar-file" style="height: 130px; margin-bottom: 1rem;">
+              <span id="avatar-file-label">Seleccionar imagen desde tu dispositivo</span>
+              <input type="file" id="input-avatar-file" accept="image/*" style="display:none;" />
+            </label>
+
+            <p style="font-weight: 600; font-size: 0.88rem; margin-bottom: 0.5rem;">O elige un avatar rapido:</p>
+            <div style="display: flex; gap: 0.65rem;">
+              <button type="button" class="preset-avatar-btn" data-src="../assets/images/imagen7.png">
+                <img src="../assets/images/imagen7.png" alt="Avatar 1" style="width:48px; height:48px; border-radius:50%; object-fit:cover;" />
+              </button>
+              <button type="button" class="preset-avatar-btn" data-src="../assets/images/imagen1.png">
+                <img src="../assets/images/imagen1.png" alt="Avatar 2" style="width:48px; height:48px; border-radius:50%; object-fit:cover;" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+          <!-- PREPARACION PREVIA (HU-04, HU-08) -->
+      <section id="view-preparacion" class="view-section">
+        <p class="breadcrumb">Ensamblaje &gt; <strong>Preparación previa</strong></p>
+        <h1>Preparación previa</h1>
+        <p class="subtitle">Marca lo que ya tienes antes de empezar a armar.</p>
+        <div class="ficha-split-grid" style="margin-top: 1.25rem;">
+          <div class="surface-card"><h3>Herramientas</h3><span class="soft-blue-pill" id="prep-tools-count">0</span><div class="progress-track"><div class="progress-fill" id="prep-tools-fill" style="width:0%"></div></div><div id="prep-tools" class="check-list"></div></div>
+          <div class="surface-card"><h3>Piezas del mueble</h3><span class="soft-blue-pill" id="prep-parts-count">0</span><div class="progress-track"><div class="progress-fill" id="prep-parts-fill" style="width:0%"></div></div><div id="prep-parts" class="check-list"></div></div>
+        </div>
+        <button type="button" class="btn-bright-blue" id="btn-start-guide" style="margin-top: 1.25rem;">Comenzar guía 3D</button>
+      </section>
+
+      <section id="view-piezas" class="view-section"></section>
+
+      <section id="view-lectura" class="view-section"></section>
+
+    </main>
+  </div>
+
+  <!-- Barra Inferior Mobile -->
+  <nav class="mobile-bottom-nav" aria-label="Navegacion movil">
+    <button class="mob-nav-btn active" data-view="view-inicio">Inicio</button>
+    <button class="mob-nav-btn" data-view="view-proyectos">Proyectos</button>
+    <button class="mob-nav-btn" data-view="view-catalogo">Catalogo</button>
+    <button class="mob-nav-btn" data-view="view-perfil">Perfil</button>
+  </nav>
+
+  <!-- Modal -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="ficha-title-row">
+        <h3 id="modal-title">AVISO</h3>
+        <button id="btn-close-modal" class="top-ghost-btn" style="color:#0F172A; border-color:#CBD5E1;">CERRAR</button>
+      </div>
+      <div id="modal-body" style="margin-top: 0.75rem;"></div>
+    </div>
+  </div>
+
+  <button type="button" id="go-lectura" data-view="view-lectura" hidden></button>
+  <button type="button" id="go-cargar" data-view="view-cargar" hidden></button>
+  <script src="../js/main.js"></script>
+  <script src="../js/extras.js"></script>
+</body>
+</html>
