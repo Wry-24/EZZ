@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="surface-card">
         <h3>Visor de herrajes</h3>
         <div class="filter-row" id="vis-botones"></div>
-        <div class="hw-stage"><img id="vis-img" src="../assets/images/imagen9.png" alt="Herraje seleccionado"></div>
+        <div class="hw-stage"><img id="vis-img" src="assets/images/imagen9.png" alt="Herraje seleccionado"></div>
         <label class="rng">Giro <input type="range" id="vis-rot" min="0" max="360" value="0"></label>
         <label class="rng">Zoom <input type="range" id="vis-zoom" min="100" max="250" value="100"></label>
         <p class="subtitle" id="vis-info"></p>
@@ -577,104 +577,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const u = USERS.get()[store.get('ez_session', '')];
     if (!u) return;
     const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
-    set('topbar-user-name', u.nombre); set('profile-display-name', u.nombre); set('profile-display-email', u.email);
-    set('home-greeting-title', `Hola, ${u.nombre}`); set('home-breadcrumb-name', `Hola, ${u.nombre}`);
-    const av = $('#topbar-avatar-wrap');
-    if (av && !av.querySelector('img')) av.textContent = u.nombre.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    set('topbar-user-name', u.nombre);
+    set('profile-display-name', u.nombre);
+    set('profile-display-email', u.email);
   }
-  function iniciarSesion(email) {
-    store.set('ez_session', email);
-    aplicarUsuario();
-    auth.classList.add('hidden');
-    const u = USERS.get()[email];
-    toast(`Bienvenido, ${u.nombre}`);
-  }
-
-  $('#au-reg').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nombre = $('#rg-nom').value.trim(), email = $('#rg-mail').value.trim().toLowerCase(), c1 = $('#rg-pass').value, c2 = $('#rg-pass2').value;
-    const err = m => { $('#rg-err').textContent = m; };
-    if (nombre.length < 2) return err('Escribe tu nombre.');
-    if (!correoOk(email)) return err('Escribe un correo válido, por ejemplo nombre@correo.com.');
-    if (!claveOk(c1)) return err('La contraseña debe tener mínimo 8 caracteres, con letras y números.');
-    if (c1 !== c2) return err('Las contraseñas no coinciden.');
-    const us = USERS.get();
-    if (us[email] && us[email].verificado) return err('Ya existe una cuenta con ese correo. Inicia sesión.');
-    const sal = Math.random().toString(36).slice(2);
-    us[email] = { nombre, email, sal, clave: await hash(c1, sal), verificado: false };
-    USERS.set(us);
-    enviarCodigo(email);
-  });
-
-  $('#au-ver').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const p = store.get('ez_pend', null), err = m => { $('#ve-err').textContent = m; };
-    if (!p) return err('Pide un código nuevo con "Reenviar código".');
-    if (Date.now() > p.exp) return err('El código venció. Pide uno nuevo.');
-    if (p.tries >= 5) return err('Demasiados intentos. Pide un código nuevo.');
-    if ($('#ve-cod').value.trim() !== p.code) { p.tries++; store.set('ez_pend', p); return err(`Código incorrecto. Te quedan ${5 - p.tries} intentos.`); }
-    const us = USERS.get();
-    us[p.email].verificado = true;
-    USERS.set(us);
-    store.set('ez_pend', null);
-    iniciarSesion(p.email);
-  });
-
-  $('#au-login').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = $('#li-mail').value.trim().toLowerCase(), clave = $('#li-pass').value, err = m => { $('#li-err').textContent = m; };
-    const lock = store.get('ez_lock', { n: 0, hasta: 0 });
-    if (Date.now() < lock.hasta) return err(`Demasiados intentos. Espera ${Math.ceil((lock.hasta - Date.now()) / 1000)} s.`);
-    if (!correoOk(email) || !clave) return err('Escribe tu correo y tu contraseña.');
-    const u = USERS.get()[email];
-    if (!u || (await hash(clave, u.sal)) !== u.clave) {
-      lock.n++;
-      if (lock.n >= 3) { lock.n = 0; lock.hasta = Date.now() + 30000; }
-      store.set('ez_lock', lock);
-      return err('Correo o contraseña incorrectos.');
-    }
-    store.set('ez_lock', { n: 0, hasta: 0 });
-    if (!u.verificado) { enviarCodigo(email); return; }
-    $('#li-pass').value = '';
-    iniciarSesion(email);
-  });
-
-  /* Cerrar sesión */
-  $('#btn-logout-profile').addEventListener('click', () => {
-    modal('¿Cerrar sesión?', `<p>Tendrás que iniciar sesión de nuevo para volver a entrar.</p>
-      <div class="modal-actions"><button type="button" class="soft-back-btn" id="lo-no">Cancelar</button><button type="button" class="btn-bright-blue" id="lo-ok">Cerrar sesión</button></div>`);
-    $('#lo-no').onclick = closeModal;
-    $('#lo-ok').onclick = () => {
-      closeModal(); store.set('ez_session', null);
-      $('.nav-item[data-view="view-inicio"]').click();
-      panel('login'); auth.classList.remove('hidden');
-      toast('Sesión cerrada');
-    };
-  });
-
-  /* Eliminar cuenta */
-  const del = document.createElement('button');
-  del.type = 'button'; del.className = 'profile-menu-row danger-row';
-  del.innerHTML = '<span>Eliminar mi cuenta</span><span>&gt;</span>';
-  $('#btn-logout-profile').before(del);
-  del.addEventListener('click', () => {
-    modal('Eliminar cuenta', `<p><strong>Esta acción no se puede deshacer.</strong> Se borrarán tu cuenta, tus favoritos y tus listas.</p>
-      <label class="rng">Contraseña <input class="auth-input" type="password" id="dl-pass" autocomplete="current-password"></label>
-      <p class="alert-bad" id="dl-err" role="alert"></p>
-      <div class="modal-actions"><button type="button" class="soft-back-btn" id="dl-no">Cancelar</button><button type="button" class="btn-red" id="dl-ok">Eliminar para siempre</button></div>`);
-    $('#dl-no').onclick = closeModal;
-    $('#dl-ok').onclick = async () => {
-      const us = USERS.get(), email = store.get('ez_session', ''), u = us[email];
-      if (!u || (await hash($('#dl-pass').value, u.sal)) !== u.clave) { $('#dl-err').textContent = 'La contraseña no es correcta.'; return; }
-      delete us[email];
-      USERS.set(us);
-      ['ez_session', 'ez_tools', 'ez_parts', 'ez_favs', 'ez_pend', 'ez_lock'].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
-      closeModal(); toast('Cuenta eliminada');
-      setTimeout(() => location.reload(), 900);
-    };
-  });
-
-  /* Al abrir la página: ¿hay sesión guardada? */
-  const sesion = USERS.get()[store.get('ez_session', '')];
-  if (sesion && sesion.verificado) aplicarUsuario(); else { panel('login'); auth.classList.remove('hidden'); }
 });
